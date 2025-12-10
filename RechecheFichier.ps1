@@ -1,21 +1,25 @@
 ﻿# Demande du chemin où chercher
-$chemin = Read-Host "Chemin où effectuer la recherche (ex: C:\Users\Marion\Documents)"
+$chemin = Read-Host "Chemin où effectuer la recherche"
 
-# Demande du nom du fichier à rechercher
-$recherche = Read-Host "Nom du fichier à rechercher"
+# Vérifie si le chemin existe
+if (-not (Test-Path $chemin)) {
+    Write-Host "Le chemin n'existe pas." -ForegroundColor Red
+    exit
+}
 
-# Recherche du fichier
-$resultats = Get-ChildItem -Path $chemin -Recurse -Filter "$recherche" -ErrorAction SilentlyContinue
+# Demande du nom du fichier (recherche partielle)
+$recherche = Read-Host "Nom du fichier (partiel accepté)"
 
-# Vérification
+# Recherche partielle
+$resultats = Get-ChildItem -Path $chemin -Recurse -ErrorAction SilentlyContinue |
+             Where-Object { $_.Name -like "*$recherche*" }
+
+# Affichage des chemins uniquement
 if ($resultats) {
-    Write-Host "Fichier trouvé !" -ForegroundColor Green
-
-    # Chemin complet du premier résultat
-    $new_chemin = $resultats[0].FullName
-
-    Write-Host "Chemin du fichier :" $new_chemin
+    foreach ($f in $resultats) {
+        Write-Host $f.FullName
+    }
 }
 else {
-    Write-Host "Fichier non trouvé." -ForegroundColor Yellow
+    Write-Host "Aucun fichier trouvé." -ForegroundColor Yellow
 }
