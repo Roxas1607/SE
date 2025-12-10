@@ -10,9 +10,10 @@ if (-not (Test-Path $chemin)) {
 # Demande du nom du fichier (recherche partielle)
 $recherche = Read-Host "Nom du fichier (partiel accepté)"
 
-# Recherche partielle
+# Recherche partielle + TRI PAR DATE
 $resultats = Get-ChildItem -Path $chemin -Recurse -ErrorAction SilentlyContinue |
-             Where-Object { $_.Name -like "*$recherche*" }
+             Where-Object { $_.Name -like "*$recherche*" } |
+             Sort-Object LastWriteTime -Descending   # <--- TRI PAR DATE
 
 # Affichage des chemins uniquement
 if ($resultats) {
